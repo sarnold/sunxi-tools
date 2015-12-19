@@ -654,6 +654,38 @@ void aw_write_arm_cp_reg(libusb_device_handle *usb, soc_sram_info *sram_info,
 	aw_fel_execute(usb, sram_info->scratch_addr);
 }
 
+uint32_t aw_fel_readl(libusb_device_handle *usb, uint32_t addr)
+{
+	soc_sram_info *sram_info = aw_fel_get_sram_info(usb);
+	uint32_t val = 0;
+	uint32_t arm_code[] = {
+		htole32(0xe59f0008), /* ldr        r0, [pc, #8]             */
+		htole32(0xe5900000), /* ldr        r0, [r0]                 */
+		htole32(0xe58f0000), /* str        r0, [pc]                 */
+		htole32(0xe12fff1e), /* bx         lr                       */
+		htole32(addr)
+	};
+	aw_fel_write(usb, arm_code, sram_info->scratch_addr, sizeof(arm_code));
+	aw_fel_execute(usb, sram_info->scratch_addr);
+	aw_fel_read(usb, sram_info->scratch_addr + 16, &val, sizeof(val));
+	return le32toh(val);
+}
+
+void aw_fel_writel(libusb_device_handle *usb, uint32_t addr, uint32_t val)
+{
+	soc_sram_info *sram_info = aw_fel_get_sram_info(usb);
+	uint32_t arm_code[] = {
+		htole32(0xe59f0008), /* ldr        r0, [pc, #8]             */
+		htole32(0xe59f1008), /* ldr        r1, [pc, #8]             */
+		htole32(0xe5801000), /* str        r1, [r0]                 */
+		htole32(0xe12fff1e), /* bx         lr                       */
+		htole32(addr),
+		htole32(val)
+	};
+	aw_fel_write(usb, arm_code, sram_info->scratch_addr, sizeof(arm_code));
+	aw_fel_execute(usb, sram_info->scratch_addr);
+}
+
 void aw_enable_l2_cache(libusb_device_handle *usb, soc_sram_info *sram_info)
 {
 	uint32_t arm_code[] = {
@@ -1314,6 +1346,8 @@ int main(int argc, char **argv)
 			"	hex[dump] address length	Dumps memory region in hex\n"
 			"	dump address length		Binary memory dump\n"
 			"	exe[cute] address		Call function address\n"
+			"	readl address			Read 32-bit value from device memory\n"
+			"	writel address value		Write 32-bit value to device memory\n"
 			"	read address length file	Write memory contents into file\n"
 			"	write address file		Store file contents into memory\n"
 			"	write-with-progress addr file	\"write\" with progress bar\n"
@@ -1379,6 +1413,16 @@ int main(int argc, char **argv)
 			skip = 3;
 		} else if (strncmp(argv[1], "dump", 4) == 0 && argc > 3) {
 			aw_fel_dump(handle, strtoul(argv[2], NULL, 0), strtoul(argv[3], NULL, 0));
+			skip = 3;
+		} else if (strcmp(argv[1], "readl") == 0 && argc > 2) {
+			uint32_t addr = strtoul(argv[2], NULL, 0);
+			uint32_t val = aw_fel_readl(handle, addr);
+			printf("0x%08x\n", val);
+			skip = 2;
+		} else if (strcmp(argv[1], "writel") == 0 && argc > 2) {
+			uint32_t addr = strtoul(argv[2], NULL, 0);
+			uint32_t val = strtoul(argv[3], NULL, 0);
+			aw_fel_writel(handle, addr, val);
 			skip = 3;
 		} else if (strncmp(argv[1], "exe", 3) == 0 && argc > 2) {
 			aw_fel_execute(handle, strtoul(argv[2], NULL, 0));
