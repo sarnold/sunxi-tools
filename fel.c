@@ -505,51 +505,51 @@ sram_swap_buffers ar100_abusing_sram_swap_buffers[] = {
 soc_sram_info soc_sram_info_table[] = {
 	{
 		.soc_id       = 0x1623, /* Allwinner A10 */
-		.scratch_addr = 0x2000,
+		.scratch_addr = 0x1000,
 		.thunk_addr   = 0xA200, .thunk_size = 0x200,
 		.swap_buffers = a10_a13_a20_sram_swap_buffers,
 		.needs_l2en   = 1,
 	},
 	{
 		.soc_id       = 0x1625, /* Allwinner A13 */
-		.scratch_addr = 0x2000,
+		.scratch_addr = 0x1000,
 		.thunk_addr   = 0xA200, .thunk_size = 0x200,
 		.swap_buffers = a10_a13_a20_sram_swap_buffers,
 		.needs_l2en   = 1,
 	},
 	{
 		.soc_id       = 0x1651, /* Allwinner A20 */
-		.scratch_addr = 0x2000,
+		.scratch_addr = 0x1000,
 		.thunk_addr   = 0xA200, .thunk_size = 0x200,
 		.swap_buffers = a10_a13_a20_sram_swap_buffers,
 	},
 	{
 		.soc_id       = 0x1650, /* Allwinner A23 */
-		.scratch_addr = 0x2000,
+		.scratch_addr = 0x1000,
 		.thunk_addr   = 0x46E00, .thunk_size = 0x200,
 		.swap_buffers = ar100_abusing_sram_swap_buffers,
 	},
 	{
 		.soc_id       = 0x1633, /* Allwinner A31 */
-		.scratch_addr = 0x2000,
+		.scratch_addr = 0x1000,
 		.thunk_addr   = 0x22E00, .thunk_size = 0x200,
 		.swap_buffers = a31_sram_swap_buffers,
 	},
 	{
 		.soc_id       = 0x1667, /* Allwinner A33 */
-		.scratch_addr = 0x2000,
+		.scratch_addr = 0x1000,
 		.thunk_addr   = 0x46E00, .thunk_size = 0x200,
 		.swap_buffers = ar100_abusing_sram_swap_buffers,
 	},
 	{
 		.soc_id       = 0x1673, /* Allwinner A83T */
-		.scratch_addr = 0x2000,
+		.scratch_addr = 0x1000,
 		.thunk_addr   = 0x46E00, .thunk_size = 0x200,
 		.swap_buffers = ar100_abusing_sram_swap_buffers,
 	},
 	{
 		.soc_id       = 0x1680, /* Allwinner H3 */
-		.scratch_addr = 0x2000,
+		.scratch_addr = 0x1000,
 		.mmu_tt_addr  = 0x8000,
 		.thunk_addr   = 0xA200, .thunk_size = 0x200,
 		.swap_buffers = a10_a13_a20_sram_swap_buffers,
