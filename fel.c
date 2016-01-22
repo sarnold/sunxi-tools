@@ -247,6 +247,7 @@ void aw_fel_print_version(libusb_device_handle *usb)
 	case 0x1633: soc_name="A31";break;
 	case 0x1651: soc_name="A20";break;
 	case 0x1650: soc_name="A23";break;
+	case 0x1689: soc_name="A64";break;
 	case 0x1639: soc_name="A80";break;
 	case 0x1667: soc_name="A33";break;
 	case 0x1673: soc_name="A83T";break;
@@ -492,6 +493,17 @@ sram_swap_buffers a31_sram_swap_buffers[] = {
 };
 
 /*
+ * A64 has a large SRAM C at 0x18000, which we use as a backup storage
+ * for FEL stacks. Also the SPL load address is 0x10000 and it makes this
+ * SoC rather unique.
+ */
+sram_swap_buffers a64_sram_swap_buffers[] = {
+	{ .buf1 = 0x11800, .buf2 = 0x18000, .size = 0x800 },
+	{ .buf1 = 0x15C00, .buf2 = 0x18800, .size = 0x8000 - 0x5C00 },
+	{ 0 }  /* End of the table */
+};
+
+/*
  * Use the SRAM section at 0x44000 as the backup storage. This is the memory,
  * which is normally shared with the OpenRISC core (should we do an extra check
  * to ensure that this core is powered off and can't interfere?).
@@ -540,6 +552,13 @@ soc_sram_info soc_sram_info_table[] = {
 		.scratch_addr = 0x1000,
 		.thunk_addr   = 0x46E00, .thunk_size = 0x200,
 		.swap_buffers = ar100_abusing_sram_swap_buffers,
+	},
+	{
+		.soc_id       = 0x1689, /* Allwinner A64 */
+		.spl_addr     = 0x10000,
+		.scratch_addr = 0x11000,
+		.thunk_addr   = 0x1AE00, .thunk_size = 0x200,
+		.swap_buffers = a64_sram_swap_buffers,
 	},
 	{
 		.soc_id       = 0x1673, /* Allwinner A83T */
@@ -840,8 +859,8 @@ uint32_t *aw_backup_and_disable_mmu(libusb_device_handle *usb,
 	 * checks needs to be relaxed).
 	 */
 
-	/* Basically, ignore M/Z/I bits and expect no TEX remap */
-	if ((sctlr & ~((1 << 12) | (1 << 11) | 1)) != 0x00C52078) {
+	/* Basically, ignore V/M/Z/I/UNK bits and expect no TEX remap */
+	if ((sctlr & ~((3 << 11) | (1 << 6) | 1)) != 0x00C50038) {
 		fprintf(stderr, "Unexpected SCTLR (%08X)\n", sctlr);
 		exit(1);
 	}
