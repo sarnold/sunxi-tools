@@ -133,6 +133,13 @@ static bool spi0_init(libusb_device_handle *usb)
 
 	/* Setup SPI0 pins muxing */
 	switch (sram_info->soc_id) {
+	case 0x1623: /* A10 */
+	case 0x1651: /* A20 */
+		gpio_set_cfgpin(usb, PC, 0, SUNXI_GPC_SPI0);
+		gpio_set_cfgpin(usb, PC, 1, SUNXI_GPC_SPI0);
+		gpio_set_cfgpin(usb, PC, 2, SUNXI_GPC_SPI0);
+		gpio_set_cfgpin(usb, PC, 23, SUNXI_GPC_SPI0);
+		break;
 	case 0x1625: /* Allwinner A13 */
 	case 0x1680: /* Allwinner H3 */
 		gpio_set_cfgpin(usb, PC, 0, SUNXI_GPC_SPI0);
