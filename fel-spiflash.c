@@ -420,7 +420,7 @@ void aw_fel_spiflash_info(libusb_device_handle *usb)
 {
 	soc_sram_info *sram_info = aw_fel_get_sram_info(usb);
 	const char *manufacturer;
-	unsigned char buf[] = { 0, 4, 0x9F, 0, 0, 0, 0x0, 0x0 };
+	unsigned char buf[] = { 0, 4, 0x9F, 1, 2, 3, 0x0, 0x0 };
 	void *backup = backup_sram(usb);
 
 	spi0_init(usb);
