@@ -142,6 +142,7 @@ static bool spi0_init(libusb_device_handle *usb)
 		break;
 	case 0x1625: /* Allwinner A13 */
 	case 0x1680: /* Allwinner H3 */
+	case 0x1718: /* Allwinner H5 */
 		gpio_set_cfgpin(usb, PC, 0, SUNXI_GPC_SPI0);
 		gpio_set_cfgpin(usb, PC, 1, SUNXI_GPC_SPI0);
 		gpio_set_cfgpin(usb, PC, 2, SUNXI_GPC_SPI0);
